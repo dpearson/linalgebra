@@ -11,7 +11,7 @@
 		"npm": "1.1.x"
 	},
 	"directories": {
-		"lib": "./lib",
+		"lib": "./lib"
 	},
 	"main": "./lib/index.js"
 }
