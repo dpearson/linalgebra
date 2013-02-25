@@ -1,0 +1,17 @@
+{
+	"name": "linalgebra",
+	"version": "0.0.1",
+	"dependencies": {
+	},
+	"devDependencies": {
+		"coffee-script": "1.4.0"
+	},
+	"engines": {
+		"node": "0.8.x",
+		"npm": "1.1.x"
+	},
+	"directories": {
+		"lib": "./lib",
+	},
+	"main": "./lib/index.js"
+}
