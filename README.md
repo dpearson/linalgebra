@@ -8,7 +8,6 @@ At this point, I am working on this library solely for my own benefit in learnin
 
 Make sure you have [node.js](http://nodejs.org/) installed, then run:
 
-	```shell
     sudo npm install -g coffee-script
     npm install
     cake build
