@@ -11,22 +11,36 @@ err=(data) ->
 out=(data) ->
 	process.stdout.write data.toString()
 
+runCmd=(cmd, args) ->
+	proc=child_process.spawn cmd, args
+
+	proc.stderr.on "data", err
+	proc.stdout.on "data", out
+
 genCpyFunc=(filename, dest) ->
-	eval "var func=function (curr, prev) { if (curr.mtime.getTime()!=prev.mtime.getTime()) {console.log(\"cp #{filename} #{dest}\");child_process.exec(\"cp #{filename} #{dest}\");} }"
-	func
+	(curr, prev) ->
+		if curr.mtime.getTime()!=prev.mtime.getTime()
+			console.log("cp #{filename} #{dest}")
+			child_process.exec("cp #{filename} #{dest}")
 
 task "build", "Compile all Coffee Script and move files", (options) ->
 	fs.mkdir "lib", (e) ->
-		main=child_process.spawn "coffee", ["-o", "lib", "-c", "src"]
+		runCmd "coffee", ["-o", "lib", "-c", "src"]
 
-		main.stderr.on "data", err
-		main.stdout.on "data", out
+	fs.mkdir "tests", (e) ->
+		runCmd "coffee", ["-o", "tests", "-c", "src/tests"]
 
-task "watch", "Watch all source file for changes and build newly changed files", (options) ->
-	main=child_process.spawn "coffee", ["-w", "-o", "lib", "-c", "src"]
+task "watch", "Watch all source files for changes and build newly changed files", (options) ->
+	fs.mkdir "lib", (e) ->
+		runCmd "coffee", ["-w", "-o", "lib", "-c", "src"]
 
-	main.stderr.on "data", err
-	main.stdout.on "data", out
+	fs.mkdir "tests", (e) ->
+		runCmd "coffee", ["-w", "-o", "tests", "-c", "src/tests"]
+
+task "test", "Run the test cases", (options) ->
+	invoke "build"
+
+	runCmd "vows", ["--spec", "tests/*"]
 
 task "loc", "Counts the number of lines of code", (options) ->
 	countLines=(dir) ->
@@ -42,4 +56,4 @@ task "loc", "Counts the number of lines of code", (options) ->
 
 		count
 
-	console.log countLines("src")+countLines("src/speakers")
+	console.log countLines("src")+countLines("src/tests")
